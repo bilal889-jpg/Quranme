@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Quran — My Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Amiri:ital@0;1&family=Noto+Nastaliq+Urdu&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #f7f4ef;
+  --warm-white: #fdfcfa;
+  --ink: #1c1a17;
+  --ink-light: #6b6560;
+  --ink-faint: #c4bfb8;
+  --gold: #c9a84c;
+  --gold-light: #e8d5a0;
+  --gold-faint: #f5edda;
+  --border: #ede9e2;
+  --green: #2d6a4f;
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+width: 100%; height: 100%;
+background: var(–cream);
+font-family: ‘EB Garamond’, serif;
+color: var(–ink);
+overflow: hidden;
+}
+
+/* ── SCREENS ── */
+.screen {
+position: fixed; inset: 0;
+overflow-y: auto;
+background: var(–cream);
+transform: translateX(100%);
+transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+will-change: transform;
+}
+.screen.active { transform: translateX(0); }
+.screen.behind  { transform: translateX(-8%); }
+
+/* ── HOME ── */
+#home {
+display: flex;
+flex-direction: column;
+min-height: 100%;
+background: var(–ink);
+transform: translateX(0);
+}
+
+.home-hero {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 60px 32px 40px;
+position: relative;
+overflow: hidden;
+}
+
+.home-hero::before {
+content: ‘’;
+position: absolute;
+width: 320px; height: 320px;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+top: 50%; left: 50%;
+transform: translate(-50%, -60%);
+pointer-events: none;
+}
+
+.bismillah {
+font-family: ‘Amiri’, serif;
+font-size: 32px;
+color: var(–gold);
+text-align: center;
+margin-bottom: 32px;
+line-height: 1.6;
+opacity: 0;
+animation: fadeDown 0.8s 0.2s ease forwards;
+}
+
+.home-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 42px;
+font-weight: 400;
+color: var(–warm-white);
+text-align: center;
+line-height: 1.2;
+margin-bottom: 8px;
+opacity: 0;
+animation: fadeDown 0.8s 0.4s ease forwards;
+}
+
+.home-subtitle {
+font-size: 15px;
+color: var(–ink-faint);
+text-align: center;
+letter-spacing: 3px;
+text-transform: uppercase;
+margin-bottom: 48px;
+opacity: 0;
+animation: fadeDown 0.8s 0.5s ease forwards;
+}
+
+.home-nav {
+width: 100%;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+opacity: 0;
+animation: fadeDown 0.8s 0.7s ease forwards;
+}
+
+.home-card {
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(201,168,76,0.2);
+border-radius: 16px;
+padding: 24px 20px;
+cursor: pointer;
+transition: all 0.2s;
+text-align: left;
+}
+
+.home-card:active {
+background: rgba(201,168,76,0.1);
+transform: scale(0.97);
+}
+
+.home-card-icon {
+font-size: 24px;
+margin-bottom: 12px;
+display: block;
+}
+
+.home-card-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 17px;
+color: var(–warm-white);
+display: block;
+margin-bottom: 4px;
+}
+
+.home-card-sub {
+font-size: 12px;
+color: var(–ink-faint);
+display: block;
+letter-spacing: 0.5px;
+}
+
+.home-card.wide {
+grid-column: 1 / -1;
+}
+
+.home-bottom {
+padding: 24px 32px 40px;
+border-top: 1px solid rgba(255,255,255,0.06);
+opacity: 0;
+animation: fadeDown 0.8s 0.9s ease forwards;
+}
+
+.ayah-of-day {
+text-align: center;
+}
+
+.ayah-label {
+font-size: 11px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 12px;
+display: block;
+}
+
+.ayah-arabic-small {
+font-family: ‘Amiri’, serif;
+font-size: 20px;
+color: var(–warm-white);
+line-height: 1.8;
+direction: rtl;
+margin-bottom: 8px;
+}
+
+.ayah-trans-small {
+font-size: 13px;
+font-style: italic;
+color: var(–ink-faint);
+line-height: 1.6;
+}
+
+/* ── SHARED HEADER ── */
+.screen-header {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 16px 20px;
+border-bottom: 1px solid var(–border);
+position: sticky;
+top: 0;
+background: var(–cream);
+z-index: 10;
+}
+
+.back-btn {
+width: 36px; height: 36px;
+border-radius: 50%;
+border: 1px solid var(–border);
+background: none;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+font-size: 16px;
+color: var(–ink);
+transition: all 0.15s;
+flex-shrink: 0;
+}
+
+.back-btn:active { background: var(–border); }
+
+.screen-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 20px;
+font-weight: 400;
+flex: 1;
+}
+
+/* ── SURAH LIST ── */
+#surah-list { background: var(–warm-white); }
+
+.search-wrap {
+padding: 12px 20px 8px;
+position: sticky;
+top: 65px;
+background: var(–warm-white);
+z-index: 9;
+}
+
+.search-input {
+width: 100%;
+padding: 10px 16px;
+background: var(–cream);
+border: 1px solid var(–border);
+border-radius: 99px;
+font-family: ‘EB Garamond’, serif;
+font-size: 15px;
+color: var(–ink);
+outline: none;
+}
+
+.search-input::placeholder { color: var(–ink-faint); }
+.search-input:focus { border-color: var(–gold); }
+
+.surah-rows { padding: 8px 0 40px; }
+
+.surah-row {
+display: flex;
+align-items: center;
+padding: 14px 20px;
+gap: 16px;
+cursor: pointer;
+transition: background 0.15s;
+border-bottom: 1px solid var(–border);
+}
+
+.surah-row:active { background: var(–gold-faint); }
+
+.surah-num-badge {
+width: 36px; height: 36px;
+background: var(–gold-faint);
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+font-size: 12px;
+color: var(–gold);
+font-weight: 600;
+flex-shrink: 0;
+}
+
+.surah-row-info { flex: 1; }
+
+.surah-row-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 16px;
+display: block;
+margin-bottom: 2px;
+}
+
+.surah-row-meta {
+font-size: 12px;
+color: var(–ink-light);
+display: flex;
+gap: 8px;
+}
+
+.surah-row-arabic {
+font-family: ‘Amiri’, serif;
+font-size: 20px;
+color: var(–ink-light);
+direction: rtl;
+}
+
+.memorized-dot {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–gold);
+flex-shrink: 0;
+align-self: center;
+}
+
+/* ── SURAH VIEW ── */
+#surah-view { background: var(–warm-white); }
+
+.surah-view-header {
+background: var(–ink);
+padding: 20px;
+text-align: center;
+}
+
+.surah-view-header .back-btn {
+border-color: rgba(255,255,255,0.15);
+color: var(–warm-white);
+position: absolute;
+left: 20px;
+}
+
+.surah-view-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 26px;
+color: var(–warm-white);
+display: block;
+margin-bottom: 4px;
+}
+
+.surah-view-arabic-name {
+font-family: ‘Amiri’, serif;
+font-size: 22px;
+color: var(–gold);
+display: block;
+margin-bottom: 8px;
+}
+
+.surah-view-meta {
+font-size: 12px;
+color: var(–ink-faint);
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+
+.surah-view-header-top {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+margin-bottom: 16px;
+}
+
+/* Translation toggle */
+.trans-bar {
+display: flex;
+gap: 6px;
+padding: 12px 20px;
+border-bottom: 1px solid var(–border);
+background: var(–cream);
+position: sticky;
+top: 0;
+z-index: 10;
+overflow-x: auto;
+}
+
+.trans-btn {
+padding: 6px 14px;
+border-radius: 99px;
+border: 1px solid var(–border);
+background: none;
+font-family: ‘EB Garamond’, serif;
+font-size: 13px;
+color: var(–ink-light);
+cursor: pointer;
+white-space: nowrap;
+transition: all 0.15s;
+}
+
+.trans-btn.active {
+background: var(–ink);
+border-color: var(–ink);
+color: var(–warm-white);
+}
+
+/* Bismillah banner */
+.bismillah-banner {
+text-align: center;
+padding: 24px 20px 16px;
+font-family: ‘Amiri’, serif;
+font-size: 28px;
+color: var(–ink);
+direction: rtl;
+border-bottom: 1px solid var(–border);
+}
+
+/* Ayah */
+.ayah-block {
+padding: 20px 20px 16px;
+border-bottom: 1px solid var(–border);
+}
+
+.ayah-arabic {
+font-family: ‘Amiri’, serif;
+font-size: 26px;
+line-height: 2;
+text-align: right;
+direction: rtl;
+color: var(–ink);
+margin-bottom: 12px;
+}
+
+.ayah-number-inline {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 28px; height: 28px;
+background: var(–gold-faint);
+border-radius: 50%;
+font-size: 11px;
+color: var(–gold);
+font-family: ‘EB Garamond’, serif;
+margin-left: 6px;
+vertical-align: middle;
+direction: ltr;
+}
+
+.ayah-transliteration {
+font-size: 14px;
+font-style: italic;
+color: var(–ink-light);
+line-height: 1.7;
+margin-bottom: 8px;
+display: none;
+}
+
+.ayah-translation-en {
+font-size: 15px;
+color: var(–ink-light);
+line-height: 1.7;
+display: none;
+}
+
+.ayah-translation-ur {
+font-family: ‘Noto Nastaliq Urdu’, ‘Amiri’, serif;
+font-size: 16px;
+color: var(–ink-light);
+line-height: 2;
+text-align: right;
+direction: rtl;
+display: none;
+}
+
+.show-translit .ayah-transliteration { display: block; }
+.show-en .ayah-translation-en { display: block; }
+.show-ur .ayah-translation-ur { display: block; }
+
+/* ── TRACKER ── */
+#tracker-screen { background: var(–warm-white); }
+
+.tracker-stats {
+padding: 24px 20px 16px;
+border-bottom: 1px solid var(–border);
+}
+
+.tracker-count {
+font-family: ‘Playfair Display’, serif;
+font-size: 48px;
+font-weight: 400;
+line-height: 1;
+margin-bottom: 4px;
+}
+
+.tracker-label {
+font-size: 13px;
+color: var(–ink-light);
+letter-spacing: 1px;
+margin-bottom: 16px;
+}
+
+.prog-bar {
+height: 3px;
+background: var(–border);
+border-radius: 99px;
+overflow: hidden;
+}
+
+.prog-fill {
+height: 100%;
+background: var(–gold);
+border-radius: 99px;
+transition: width 0.5s ease;
+width: 0%;
+}
+
+.tracker-rows { padding: 8px 0 80px; }
+
+.tracker-row {
+display: flex;
+align-items: center;
+padding: 13px 20px;
+gap: 14px;
+cursor: pointer;
+border-bottom: 1px solid var(–border);
+transition: opacity 0.2s, background 0.15s;
+}
+
+.tracker-row:active { background: var(–gold-faint); }
+.tracker-row.done { opacity: 0.38; }
+
+.tracker-row-info { flex: 1; }
+
+.tracker-row-name {
+font-size: 15px;
+display: block;
+margin-bottom: 1px;
+}
+
+.tracker-row-num {
+font-size: 11px;
+color: var(–ink-faint);
+margin-right: 6px;
+}
+
+.tracker-row-en {
+font-size: 12px;
+color: var(–ink-light);
+font-style: italic;
+}
+
+.check-circle {
+width: 22px; height: 22px;
+border-radius: 50%;
+border: 1.5px solid var(–ink-faint);
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+font-size: 11px;
+color: transparent;
+transition: all 0.2s;
+}
+
+.done .check-circle {
+background: var(–ink);
+border-color: var(–ink);
+color: white;
+}
+
+/* ── SCRIPTURES ── */
+#scriptures-screen { background: var(–warm-white); }
+
+.scripture-cards { padding: 16px 20px 60px; display: flex; flex-direction: column; gap: 2px; }
+
+.scripture-card {
+background: white;
+border-radius: 12px;
+padding: 28px 24px;
+border-left: 3px solid var(–gold-light);
+margin-bottom: 8px;
+opacity: 0;
+animation: fadeUp 0.5s ease forwards;
+}
+
+.scripture-card:nth-child(1) { animation-delay: 0.05s; }
+.scripture-card:nth-child(2) { animation-delay: 0.12s; }
+.scripture-card:nth-child(3) { animation-delay: 0.19s; }
+.scripture-card:nth-child(4) { animation-delay: 0.26s; }
+.scripture-card:nth-child(5) { animation-delay: 0.33s; }
+
+.scripture-arabic {
+font-family: ‘Amiri’, serif;
+font-size: 24px;
+direction: rtl;
+text-align: right;
+line-height: 1.9;
+color: var(–ink);
+margin-bottom: 16px;
+}
+
+.scripture-divider {
+width: 24px; height: 1px;
+background: var(–gold-light);
+margin-bottom: 12px;
+}
+
+.scripture-translation {
+font-size: 15px;
+font-style: italic;
+color: var(–ink-light);
+line-height: 1.7;
+margin-bottom: 10px;
+}
+
+.scripture-ref {
+font-size: 11px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-12px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(10px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── LOADING ── */
+.loading-ayahs {
+text-align: center;
+padding: 60px 20px;
+color: var(–ink-light);
+font-style: italic;
+font-size: 16px;
+}
+
+.loading-dot {
+display: inline-block;
+animation: blink 1.2s infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+0%, 80%, 100% { opacity: 0; }
+40% { opacity: 1; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- ═══════════ HOME ═══════════ -->
+
+<div id="home" class="screen active">
+  <div class="home-hero">
+    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <h1 class="home-title">My Quran</h1>
+    <p class="home-subtitle">Companion</p>
+    <div class="home-nav">
+      <div class="home-card" onclick="showScreen('surah-list')">
+        <span class="home-card-icon">📖</span>
+        <span class="home-card-title">Read Quran</span>
+        <span class="home-card-sub">All 114 Surahs</span>
+      </div>
+      <div class="home-card" onclick="showScreen('tracker-screen')">
+        <span class="home-card-icon">✦</span>
+        <span class="home-card-title">Hifz Tracker</span>
+        <span class="home-card-sub" id="home-tracker-sub">0 / 114 memorized</span>
+      </div>
+      <div class="home-card wide" onclick="showScreen('scriptures-screen')">
+        <span class="home-card-icon">🌙</span>
+        <span class="home-card-title">Daily Scriptures</span>
+        <span class="home-card-sub">Selected Ayaat with meaning</span>
+      </div>
+    </div>
+  </div>
+  <div class="home-bottom">
+    <div class="ayah-of-day">
+      <span class="ayah-label">Ayah of the Day</span>
+      <div class="ayah-arabic-small">إِنَّ مَعَ الْعُسْرِ يُسْرًا</div>
+      <div class="ayah-trans-small">Indeed, with hardship comes ease. — 94:6</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SURAH LIST ═══════════ -->
+
+<div id="surah-list" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="screen-title">The Holy Quran</span>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="Search surah..." oninput="filterSurahs(this.value)" id="search-box">
+  </div>
+  <div class="surah-rows" id="surah-rows"></div>
+</div>
+
+<!-- ═══════════ SURAH VIEW ═══════════ -->
+
+<div id="surah-view" class="screen">
+  <div class="surah-view-header" id="surah-view-header">
+    <div class="surah-view-header-top">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div>
+        <span class="surah-view-name" id="sv-name"></span>
+        <span class="surah-view-arabic-name" id="sv-arabic"></span>
+        <span class="surah-view-meta" id="sv-meta"></span>
+      </div>
+    </div>
+  </div>
+  <div class="trans-bar" id="trans-bar">
+    <button class="trans-btn" onclick="toggleTrans('translit')" id="btn-translit">Transliteration</button>
+    <button class="trans-btn" onclick="toggleTrans('en')" id="btn-en">English</button>
+    <button class="trans-btn" onclick="toggleTrans('ur')" id="btn-ur">اردو</button>
+  </div>
+  <div id="ayah-container"></div>
+</div>
+
+<!-- ═══════════ TRACKER ═══════════ -->
+
+<div id="tracker-screen" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="screen-title">Hifz Tracker</span>
+  </div>
+  <div class="tracker-stats">
+    <div class="tracker-count" id="tracker-count">0 / 114</div>
+    <div class="tracker-label">surahs memorized</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+  <div class="tracker-rows" id="tracker-rows"></div>
+</div>
+
+<!-- ═══════════ SCRIPTURES ═══════════ -->
+
+<div id="scriptures-screen" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="screen-title">Words of Allah</span>
+  </div>
+  <div class="scripture-cards">
+    <div class="scripture-card">
+      <div class="scripture-arabic">إِنَّ مَعَ الْعُسْرِ يُسْرًا</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">Indeed, with hardship comes ease.</p>
+      <p class="scripture-ref">Surah Ash-Sharh · 94:6</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">And He is with you wherever you are.</p>
+      <p class="scripture-ref">Surah Al-Hadid · 57:4</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">Indeed, Allah is Forgiving and Merciful.</p>
+      <p class="scripture-ref">Surah Al-Baqarah · 2:173</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">Allah is sufficient for us, and He is the best disposer of affairs.</p>
+      <p class="scripture-ref">Surah Ali 'Imran · 3:173</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">And do not despair of relief from Allah.</p>
+      <p class="scripture-ref">Surah Yusuf · 12:87</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">Perhaps you dislike a thing and it is good for you.</p>
+      <p class="scripture-ref">Surah Al-Baqarah · 2:216</p>
+    </div>
+    <div class="scripture-card">
+      <div class="scripture-arabic">اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ</div>
+      <div class="scripture-divider"></div>
+      <p class="scripture-translation">Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence.</p>
+      <p class="scripture-ref">Ayat al-Kursi · 2:255</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// SURAH DATA
+// ══════════════════════════════════════
+const SURAHS = [
+  { id:1,  name:"Al-Fatiha",     ar:"الفاتحة",    translit:"Al-Faatiha",       en:"The Opening",              verses:7,   type:"Meccan" },
+  { id:2,  name:"Al-Baqarah",    ar:"البقرة",     translit:"Al-Baqarah",       en:"The Cow",                  verses:286, type:"Medinan" },
+  { id:3,  name:"Ali 'Imran",    ar:"آل عمران",   translit:"Aali Imraan",      en:"Family of Imran",          verses:200, type:"Medinan" },
+  { id:4,  name:"An-Nisa",       ar:"النساء",     translit:"An-Nisaa",         en:"The Women",                verses:176, type:"Medinan" },
+  { id:5,  name:"Al-Ma'idah",    ar:"المائدة",    translit:"Al-Maaidah",       en:"The Table Spread",         verses:120, type:"Medinan" },
+  { id:6,  name:"Al-An'am",      ar:"الأنعام",    translit:"Al-An'aam",        en:"The Cattle",               verses:165, type:"Meccan" },
+  { id:7,  name:"Al-A'raf",      ar:"الأعراف",    translit:"Al-A'raaf",        en:"The Heights",              verses:206, type:"Meccan" },
+  { id:8,  name:"Al-Anfal",      ar:"الأنفال",    translit:"Al-Anfaal",        en:"The Spoils of War",        verses:75,  type:"Medinan" },
+  { id:9,  name:"At-Tawbah",     ar:"التوبة",     translit:"At-Tawbah",        en:"The Repentance",           verses:129, type:"Medinan" },
+  { id:10, name:"Yunus",         ar:"يونس",       translit:"Yunus",            en:"Jonah",                    verses:109, type:"Meccan" },
+  { id:11, name:"Hud",           ar:"هود",        translit:"Hud",              en:"Hud",                      verses:123, type:"Meccan" },
+  { id:12, name:"Yusuf",         ar:"يوسف",       translit:"Yusuf",            en:"Joseph",                   verses:111, type:"Meccan" },
+  { id:13, name:"Ar-Ra'd",       ar:"الرعد",      translit:"Ar-Ra'd",          en:"The Thunder",              verses:43,  type:"Medinan" },
+  { id:14, name:"Ibrahim",       ar:"ابراهيم",    translit:"Ibraaheem",        en:"Abraham",                  verses:52,  type:"Meccan" },
+  { id:15, name:"Al-Hijr",       ar:"الحجر",      translit:"Al-Hijr",          en:"The Rocky Tract",          verses:99,  type:"Meccan" },
+  { id:16, name:"An-Nahl",       ar:"النحل",      translit:"An-Nahl",          en:"The Bee",                  verses:128, type:"Meccan" },
+  { id:17, name:"Al-Isra",       ar:"الإسراء",    translit:"Al-Israa",         en:"The Night Journey",        verses:111, type:"Meccan" },
+  { id:18, name:"Al-Kahf",       ar:"الكهف",      translit:"Al-Kahf",          en:"The Cave",                 verses:110, type:"Meccan" },
+  { id:19, name:"Maryam",        ar:"مريم",       translit:"Maryam",           en:"Mary",                     verses:98,  type:"Meccan" },
+  { id:20, name:"Ta-Ha",         ar:"طه",         translit:"Taa-Haa",          en:"Ta-Ha",                    verses:135, type:"Meccan" },
+  { id:21, name:"Al-Anbya",      ar:"الأنبياء",   translit:"Al-Anbiyaa",       en:"The Prophets",             verses:112, type:"Meccan" },
+  { id:22, name:"Al-Hajj",       ar:"الحج",       translit:"Al-Hajj",          en:"The Pilgrimage",           verses:78,  type:"Medinan" },
+  { id:23, name:"Al-Mu'minun",   ar:"المؤمنون",   translit:"Al-Mu'minoon",     en:"The Believers",            verses:118, type:"Meccan" },
+  { id:24, name:"An-Nur",        ar:"النور",      translit:"An-Noor",          en:"The Light",                verses:64,  type:"Medinan" },
+  { id:25, name:"Al-Furqan",     ar:"الفرقان",    translit:"Al-Furqaan",       en:"The Criterion",            verses:77,  type:"Meccan" },
+  { id:26, name:"Ash-Shu'ara",   ar:"الشعراء",    translit:"Ash-Shu'araa",     en:"The Poets",                verses:227, type:"Meccan" },
+  { id:27, name:"An-Naml",       ar:"النمل",      translit:"An-Naml",          en:"The Ant",                  verses:93,  type:"Meccan" },
+  { id:28, name:"Al-Qasas",      ar:"القصص",      translit:"Al-Qasas",         en:"The Stories",              verses:88,  type:"Meccan" },
+  { id:29, name:"Al-Ankabut",    ar:"العنكبوت",   translit:"Al-Ankaboot",      en:"The Spider",               verses:69,  type:"Meccan" },
+  { id:30, name:"Ar-Rum",        ar:"الروم",      translit:"Ar-Room",          en:"The Romans",               verses:60,  type:"Meccan" },
+  { id:31, name:"Luqman",        ar:"لقمان",      translit:"Luqmaan",          en:"Luqman",                   verses:34,  type:"Meccan" },
+  { id:32, name:"As-Sajdah",     ar:"السجدة",     translit:"As-Sajdah",        en:"The Prostration",          verses:30,  type:"Meccan" },
+  { id:33, name:"Al-Ahzab",      ar:"الأحزاب",    translit:"Al-Ahzaab",        en:"The Combined Forces",      verses:73,  type:"Medinan" },
+  { id:34, name:"Saba",          ar:"سبإ",        translit:"Saba",             en:"Sheba",                    verses:54,  type:"Meccan" },
+  { id:35, name:"Fatir",         ar:"فاطر",       translit:"Faatir",           en:"The Originator",           verses:45,  type:"Meccan" },
+  { id:36, name:"Ya-Sin",        ar:"يس",         translit:"Yaa-Seen",         en:"Ya Sin",                   verses:83,  type:"Meccan" },
+  { id:37, name:"As-Saffat",     ar:"الصافات",    translit:"As-Saaffaat",      en:"Those Lined Up",           verses:182, type:"Meccan" },
+  { id:38, name:"Sad",           ar:"ص",          translit:"Saad",             en:"Sad",                      verses:88,  type:"Meccan" },
+  { id:39, name:"Az-Zumar",      ar:"الزمر",      translit:"Az-Zumar",         en:"The Groups",               verses:75,  type:"Meccan" },
+  { id:40, name:"Ghafir",        ar:"غافر",       translit:"Ghaafir",          en:"The Forgiver",             verses:85,  type:"Meccan" },
+  { id:41, name:"Fussilat",      ar:"فصلت",       translit:"Fussilat",         en:"Explained in Detail",      verses:54,  type:"Meccan" },
+  { id:42, name:"Ash-Shura",     ar:"الشورى",     translit:"Ash-Shoora",       en:"The Consultation",         verses:53,  type:"Meccan" },
+  { id:43, name:"Az-Zukhruf",    ar:"الزخرف",     translit:"Az-Zukhruf",       en:"The Gold Adornments",      verses:89,  type:"Meccan" },
+  { id:44, name:"Ad-Dukhan",     ar:"الدخان",     translit:"Ad-Dukhaan",       en:"The Smoke",                verses:59,  type:"Meccan" },
+  { id:45, name:"Al-Jathiyah",   ar:"الجاثية",    translit:"Al-Jaathiyah",     en:"The Crouching",            verses:37,  type:"Meccan" },
+  { id:46, name:"Al-Ahqaf",      ar:"الأحقاف",    translit:"Al-Ahqaaf",        en:"The Wind-Curved Sandhills",verses:35,  type:"Meccan" },
+  { id:47, name:"Muhammad",      ar:"محمد",       translit:"Muhammad",         en:"Muhammad",                 verses:38,  type:"Medinan" },
+  { id:48, name:"Al-Fath",       ar:"الفتح",      translit:"Al-Fath",          en:"The Victory",              verses:29,  type:"Medinan" },
+  { id:49, name:"Al-Hujurat",    ar:"الحجرات",    translit:"Al-Hujuraat",      en:"The Rooms",                verses:18,  type:"Medinan" },
+  { id:50, name:"Qaf",           ar:"ق",          translit:"Qaaf",             en:"Qaf",                      verses:45,  type:"Meccan" },
+  { id:51, name:"Adh-Dhariyat",  ar:"الذاريات",   translit:"Adh-Dhaariyaat",   en:"The Winnowing Winds",      verses:60,  type:"Meccan" },
+  { id:52, name:"At-Tur",        ar:"الطور",      translit:"At-Toor",          en:"The Mount",                verses:49,  type:"Meccan" },
+  { id:53, name:"An-Najm",       ar:"النجم",      translit:"An-Najm",          en:"The Star",                 verses:62,  type:"Meccan" },
+  { id:54, name:"Al-Qamar",      ar:"القمر",      translit:"Al-Qamar",         en:"The Moon",                 verses:55,  type:"Meccan" },
+  { id:55, name:"Ar-Rahman",     ar:"الرحمن",     translit:"Ar-Rahmaan",       en:"The Beneficent",           verses:78,  type:"Medinan" },
+  { id:56, name:"Al-Waqi'ah",    ar:"الواقعة",    translit:"Al-Waaqi'ah",      en:"The Inevitable",           verses:96,  type:"Meccan" },
+  { id:57, name:"Al-Hadid",      ar:"الحديد",     translit:"Al-Hadeed",        en:"The Iron",                 verses:29,  type:"Medinan" },
+  { id:58, name:"Al-Mujadila",   ar:"المجادلة",   translit:"Al-Mujaadilah",    en:"The Pleading Woman",       verses:22,  type:"Medinan" },
+  { id:59, name:"Al-Hashr",      ar:"الحشر",      translit:"Al-Hashr",         en:"The Exile",                verses:24,  type:"Medinan" },
+  { id:60, name:"Al-Mumtahanah", ar:"الممتحنة",   translit:"Al-Mumtahanah",    en:"She That is Examined",     verses:13,  type:"Medinan" },
+  { id:61, name:"As-Saf",        ar:"الصف",       translit:"As-Saff",          en:"The Ranks",                verses:14,  type:"Medinan" },
+  { id:62, name:"Al-Jumu'ah",    ar:"الجمعة",     translit:"Al-Jumu'ah",       en:"Friday",                   verses:11,  type:"Medinan" },
+  { id:63, name:"Al-Munafiqun",  ar:"المنافقون",  translit:"Al-Munaafiqoon",   en:"The Hypocrites",           verses:11,  type:"Medinan" },
+  { id:64, name:"At-Taghabun",   ar:"التغابن",    translit:"At-Taghaabun",     en:"The Mutual Disillusion",   verses:18,  type:"Medinan" },
+  { id:65, name:"At-Talaq",      ar:"الطلاق",     translit:"At-Talaaq",        en:"The Divorce",              verses:12,  type:"Medinan" },
+  { id:66, name:"At-Tahrim",     ar:"التحريم",    translit:"At-Tahreem",       en:"The Prohibition",          verses:12,  type:"Medinan" },
+  { id:67, name:"Al-Mulk",       ar:"الملك",      translit:"Al-Mulk",          en:"The Sovereignty",          verses:30,  type:"Meccan" },
+  { id:68, name:"Al-Qalam",      ar:"القلم",      translit:"Al-Qalam",         en:"The Pen",                  verses:52,  type:"Meccan" },
+  { id:69, name:"Al-Haqqah",     ar:"الحاقة",     translit:"Al-Haaqqah",       en:"The Reality",              verses:52,  type:"Meccan" },
+  { id:70, name:"Al-Ma'arij",    ar:"المعارج",    translit:"Al-Ma'aarij",      en:"The Ascending Stairways",  verses:44,  type:"Meccan" },
+  { id:71, name:"Nuh",           ar:"نوح",        translit:"Nooh",             en:"Noah",                     verses:28,  type:"Meccan" },
+  { id:72, name:"Al-Jinn",       ar:"الجن",       translit:"Al-Jinn",          en:"The Jinn",                 verses:28,  type:"Meccan" },
+  { id:73, name:"Al-Muzzammil",  ar:"المزمل",     translit:"Al-Muzzammil",     en:"The Enshrouded One",       verses:20,  type:"Meccan" },
+  { id:74, name:"Al-Muddaththir",ar:"المدثر",     translit:"Al-Muddaththir",   en:"The Cloaked One",          verses:56,  type:"Meccan" },
+  { id:75, name:"Al-Qiyamah",    ar:"القيامة",    translit:"Al-Qiyaamah",      en:"The Resurrection",         verses:40,  type:"Meccan" },
+  { id:76, name:"Al-Insan",      ar:"الإنسان",    translit:"Al-Insaan",        en:"The Human",                verses:31,  type:"Medinan" },
+  { id:77, name:"Al-Mursalat",   ar:"المرسلات",   translit:"Al-Mursalaat",     en:"The Emissaries",           verses:50,  type:"Meccan" },
+  { id:78, name:"An-Naba",       ar:"النبأ",      translit:"An-Naba",          en:"The Tidings",              verses:40,  type:"Meccan" },
+  { id:79, name:"An-Nazi'at",    ar:"النازعات",   translit:"An-Naazi'aat",     en:"Those Who Drag Forth",     verses:46,  type:"Meccan" },
+  { id:80, name:"Abasa",         ar:"عبس",        translit:"'Abasa",           en:"He Frowned",               verses:42,  type:"Meccan" },
+  { id:81, name:"At-Takwir",     ar:"التكوير",    translit:"At-Takweer",       en:"The Overthrowing",         verses:29,  type:"Meccan" },
+  { id:82, name:"Al-Infitar",    ar:"الإنفطار",   translit:"Al-Infitaar",      en:"The Cleaving",             verses:19,  type:"Meccan" },
+  { id:83, name:"Al-Mutaffifin", ar:"المطففين",   translit:"Al-Mutaffifeen",   en:"The Defrauding",           verses:36,  type:"Meccan" },
+  { id:84, name:"Al-Inshiqaq",   ar:"الانشقاق",   translit:"Al-Inshiqaaq",     en:"The Sundering",            verses:25,  type:"Meccan" },
+  { id:85, name:"Al-Buruj",      ar:"البروج",     translit:"Al-Burooj",        en:"The Mansions of the Stars",verses:22,  type:"Meccan" },
+  { id:86, name:"At-Tariq",      ar:"الطارق",     translit:"At-Taariq",        en:"The Morning Star",         verses:17,  type:"Meccan" },
+  { id:87, name:"Al-A'la",       ar:"الأعلى",     translit:"Al-A'laa",         en:"The Most High",            verses:19,  type:"Meccan" },
+  { id:88, name:"Al-Ghashiyah",  ar:"الغاشية",    translit:"Al-Ghaashiyah",    en:"The Overwhelming",         verses:26,  type:"Meccan" },
+  { id:89, name:"Al-Fajr",       ar:"الفجر",      translit:"Al-Fajr",          en:"The Dawn",                 verses:30,  type:"Meccan" },
+  { id:90, name:"Al-Balad",      ar:"البلد",      translit:"Al-Balad",         en:"The City",                 verses:20,  type:"Meccan" },
+  { id:91, name:"Ash-Shams",     ar:"الشمس",      translit:"Ash-Shams",        en:"The Sun",                  verses:15,  type:"Meccan" },
+  { id:92, name:"Al-Layl",       ar:"الليل",      translit:"Al-Layl",          en:"The Night",                verses:21,  type:"Meccan" },
+  { id:93, name:"Ad-Duha",       ar:"الضحى",      translit:"Ad-Duhaa",         en:"The Morning Hours",        verses:11,  type:"Meccan" },
+  { id:94, name:"Ash-Sharh",     ar:"الشرح",      translit:"Ash-Sharh",        en:"The Relief",               verses:8,   type:"Meccan" },
+  { id:95, name:"At-Tin",        ar:"التين",      translit:"At-Teen",          en:"The Fig",                  verses:8,   type:"Meccan" },
+  { id:96, name:"Al-Alaq",       ar:"العلق",      translit:"Al-'Alaq",         en:"The Clot",                 verses:19,  type:"Meccan" },
+  { id:97, name:"Al-Qadr",       ar:"القدر",      translit:"Al-Qadr",          en:"The Power",                verses:5,   type:"Meccan" },
+  { id:98, name:"Al-Bayyinah",   ar:"البينة",     translit:"Al-Bayyinah",      en:"The Clear Proof",          verses:8,   type:"Medinan" },
+  { id:99, name:"Az-Zalzalah",   ar:"الزلزلة",    translit:"Az-Zalzalah",      en:"The Earthquake",           verses:8,   type:"Medinan" },
+  { id:100,name:"Al-Adiyat",     ar:"العاديات",   translit:"Al-'Aadiyaat",     en:"The Courser",              verses:11,  type:"Meccan" },
+  { id:101,name:"Al-Qari'ah",    ar:"القارعة",    translit:"Al-Qaari'ah",      en:"The Calamity",             verses:11,  type:"Meccan" },
+  { id:102,name:"At-Takathur",   ar:"التكاثر",    translit:"At-Takaathur",     en:"The Rivalry in World Increase",verses:8,type:"Meccan"},
+  { id:103,name:"Al-Asr",        ar:"العصر",      translit:"Al-'Asr",          en:"The Declining Day",        verses:3,   type:"Meccan" },
+  { id:104,name:"Al-Humazah",    ar:"الهمزة",     translit:"Al-Humazah",       en:"The Traducer",             verses:9,   type:"Meccan" },
+  { id:105,name:"Al-Fil",        ar:"الفيل",      translit:"Al-Feel",          en:"The Elephant",             verses:5,   type:"Meccan" },
+  { id:106,name:"Quraysh",       ar:"قريش",       translit:"Quraysh",          en:"Quraysh",                  verses:4,   type:"Meccan" },
+  { id:107,name:"Al-Ma'un",      ar:"الماعون",    translit:"Al-Maa'oon",       en:"The Small Kindnesses",     verses:7,   type:"Meccan" },
+  { id:108,name:"Al-Kawthar",    ar:"الكوثر",     translit:"Al-Kawthar",       en:"The Abundance",            verses:3,   type:"Meccan" },
+  { id:109,name:"Al-Kafirun",    ar:"الكافرون",   translit:"Al-Kaafiroon",     en:"The Disbelievers",         verses:6,   type:"Meccan" },
+  { id:110,name:"An-Nasr",       ar:"النصر",      translit:"An-Nasr",          en:"The Divine Support",       verses:3,   type:"Medinan" },
+  { id:111,name:"Al-Masad",      ar:"المسد",      translit:"Al-Masad",         en:"The Palm Fibre",           verses:5,   type:"Meccan" },
+  { id:112,name:"Al-Ikhlas",     ar:"الإخلاص",    translit:"Al-Ikhlaas",       en:"The Sincerity",            verses:4,   type:"Meccan" },
+  { id:113,name:"Al-Falaq",      ar:"الفلق",      translit:"Al-Falaq",         en:"The Daybreak",             verses:5,   type:"Meccan" },
+  { id:114,name:"An-Nas",        ar:"الناس",      translit:"An-Naas",          en:"The Mankind",              verses:6,   type:"Meccan" }
+];
+
+// Cache fetched surahs so we don't re-fetch
+const SURAH_CACHE = {};
+
+// Full text for short surahs as fallback
+const FULL_SURAHS = {
+  1: {
+    ayahs: [
+      { ar:"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", translit:"Bismi l-lāhi r-raḥmāni r-raḥīm", en:"In the name of Allah, the Entirely Merciful, the Especially Merciful.", ur:"اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔" },
+      { ar:"الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", translit:"Al-ḥamdu lillāhi rabbi l-ʿālamīn", en:"All praise is due to Allah, Lord of the worlds.", ur:"سب تعریف اللہ کے لئے ہے جو سارے جہانوں کا پالنے والا ہے۔" },
+      { ar:"الرَّحْمَٰنِ الرَّحِيمِ", translit:"Ar-raḥmāni r-raḥīm", en:"The Entirely Merciful, the Especially Merciful.", ur:"بڑا مہربان نہایت رحم والا۔" },
+      { ar:"مَالِكِ يَوْمِ الدِّينِ", translit:"Māliki yawmi d-dīn", en:"Sovereign of the Day of Recompense.", ur:"روزِ جزا کا مالک۔" },
+      { ar:"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", translit:"Iyyāka naʿbudu wa-iyyāka nastaʿīn", en:"It is You we worship and You we ask for help.", ur:"ہم تیری ہی عبادت کرتے ہیں اور تجھی سے مدد مانگتے ہیں۔" },
+      { ar:"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", translit:"Ihdinā ṣ-ṣirāṭa l-mustaqīm", en:"Guide us to the straight path.", ur:"ہمیں سیدھا راستہ دکھا۔" },
+      { ar:"صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ", translit:"Ṣirāṭa llaḏīna anʿamta ʿalayhim ġayri l-maġḍūbi ʿalayhim wa-lā ḍ-ḍāllīn", en:"The path of those upon whom You have bestowed favor, not of those who have earned anger or of those who are astray.", ur:"ان لوگوں کا راستہ جن پر تو نے انعام کیا، نہ ان کا جن پر غضب ہوا اور نہ ان کا جو گمراہ ہوئے۔" }
+    ]
+  },
+  112: {
+    ayahs: [
+      { ar:"قُلْ هُوَ اللَّهُ أَحَدٌ", translit:"Qul huwa l-lāhu aḥad", en:"Say: He is Allah, the One.", ur:"کہہ دو: وہ اللہ ایک ہے۔" },
+      { ar:"اللَّهُ الصَّمَدُ", translit:"Allāhu ṣ-ṣamad", en:"Allah, the Eternal Refuge.", ur:"اللہ بے نیاز ہے۔" },
+      { ar:"لَمْ يَلِدْ وَلَمْ يُولَدْ", translit:"Lam yalid wa-lam yūlad", en:"He neither begets nor is born.", ur:"نہ اس نے کسی کو جنا اور نہ وہ جنا گیا۔" },
+      { ar:"وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", translit:"Wa-lam yakun lahū kufuwan aḥad", en:"Nor is there to Him any equivalent.", ur:"اور نہ کوئی اس کا ہمسر ہے۔" }
+    ]
+  },
+  113: {
+    ayahs: [
+      { ar:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", translit:"Qul aʿūḏu bi-rabbi l-falaq", en:"Say: I seek refuge in the Lord of daybreak.", ur:"کہو میں پناہ مانگتا ہوں صبح کے رب کی۔" },
+      { ar:"مِن شَرِّ مَا خَلَقَ", translit:"Min šarri mā ḫalaq", en:"From the evil of that which He created.", ur:"اس کی ہر مخلوق کے شر سے۔" },
+      { ar:"وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", translit:"Wa-min šarri ġāsiqin iḏā waqab", en:"And from the evil of darkness when it settles.", ur:"اور اندھیری رات کے شر سے جب وہ چھا جائے۔" },
+      { ar:"وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", translit:"Wa-min šarri n-naffāṯāti fī l-ʿuqad", en:"And from the evil of the blowers in knots.", ur:"اور گرہوں میں پھونکنے والیوں کے شر سے۔" },
+      { ar:"وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", translit:"Wa-min šarri ḥāsidin iḏā ḥasad", en:"And from the evil of an envier when he envies.", ur:"اور حسد کرنے والے کے شر سے جب وہ حسد کرے۔" }
+    ]
+  },
+  114: {
+    ayahs: [
+      { ar:"قُلْ أَعُوذُ بِرَبِّ النَّاسِ", translit:"Qul aʿūḏu bi-rabbi n-nās", en:"Say: I seek refuge in the Lord of mankind.", ur:"کہو میں پناہ مانگتا ہوں انسانوں کے رب کی۔" },
+      { ar:"مَلِكِ النَّاسِ", translit:"Maliki n-nās", en:"The Sovereign of mankind.", ur:"انسانوں کے بادشاہ کی۔" },
+      { ar:"إِلَٰهِ النَّاسِ", translit:"Ilāhi n-nās", en:"The God of mankind.", ur:"انسانوں کے معبود کی۔" },
+      { ar:"مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", translit:"Min šarri l-waswāsi l-ḫannās", en:"From the evil of the retreating whisperer.", ur:"وسوسہ ڈالنے والے پیچھے ہٹ جانے والے کے شر سے۔" },
+      { ar:"الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", translit:"Allaḏī yuwaswisu fī ṣudūri n-nās", en:"Who whispers in the breasts of mankind.", ur:"جو لوگوں کے سینوں میں وسوسے ڈالتا ہے۔" },
+      { ar:"مِنَ الْجِنَّةِ وَالنَّاسِ", translit:"Mina l-jinnati wa-n-nās", en:"From among the jinn and mankind.", ur:"جنوں میں سے بھی اور انسانوں میں سے بھی۔" }
+    ]
+  },
+  103: {
+    ayahs: [
+      { ar:"وَالْعَصْرِ", translit:"Wa-l-ʿaṣr", en:"By time,", ur:"زمانے کی قسم۔" },
+      { ar:"إِنَّ الْإِنسَانَ لَفِي خُسْرٍ", translit:"Inna l-insāna lafī ḫusr", en:"Indeed, mankind is in loss,", ur:"بے شک انسان خسارے میں ہے۔" },
+      { ar:"إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ", translit:"Illā llaḏīna āmanū wa-ʿamilū ṣ-ṣāliḥāti wa-tawāṣaw bi-l-ḥaqqi wa-tawāṣaw bi-ṣ-ṣabr", en:"Except for those who have believed and done righteous deeds and advised each other to truth and advised each other to patience.", ur:"سوائے ان لوگوں کے جو ایمان لائے اور نیک عمل کیے اور آپس میں حق کی وصیت کی اور صبر کی وصیت کی۔" }
+    ]
+  },
+  108: {
+    ayahs: [
+      { ar:"إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ", translit:"Innā aʿṭaynāka l-kawṯar", en:"Indeed, We have granted you the abundance.", ur:"بے شک ہم نے تمہیں کوثر عطا کیا۔" },
+      { ar:"فَصَلِّ لِرَبِّكَ وَانْحَرْ", translit:"Fa-ṣalli li-rabbika wa-nḥar", en:"So pray to your Lord and sacrifice.", ur:"پس اپنے رب کے لئے نماز پڑھو اور قربانی کرو۔" },
+      { ar:"إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ", translit:"Inna šāniaka huwa l-abtar", en:"Indeed, your enemy is the one cut off.", ur:"بے شک تمہارا دشمن ہی بے نام و نشان ہوگا۔" }
+    ]
+  },
+  110: {
+    ayahs: [
+      { ar:"إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ", translit:"Iḏā jāa naṣru llāhi wa-l-fatḥ", en:"When the victory of Allah has come and the conquest,", ur:"جب اللہ کی مدد اور فتح آ جائے۔" },
+      { ar:"وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا", translit:"Wa-raayata n-nāsa yadḫulūna fī dīni llāhi afwājā", en:"And you see the people entering into the religion of Allah in multitudes,", ur:"اور تم دیکھو کہ لوگ اللہ کے دین میں فوج در فوج داخل ہو رہے ہیں۔" },
+      { ar:"فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ إِنَّهُ كَانَ تَوَّابًا", translit:"Fa-sabbiḥ bi-ḥamdi rabbika wa-staġfirhu innahu kāna tawwābā", en:"Then exalt Him with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.", ur:"تو اپنے رب کی تعریف کے ساتھ تسبیح کرو اور اس سے مغفرت مانگو، بے شک وہ بہت توبہ قبول کرنے والا ہے۔" }
+    ]
+  },
+  97: {
+    ayahs: [
+      { ar:"إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ", translit:"Innā anzalnāhu fī laylati l-qadr", en:"Indeed, We sent it down during the Night of Decree.", ur:"بے شک ہم نے اسے شبِ قدر میں نازل کیا۔" },
+      { ar:"وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ", translit:"Wa-mā adrāka mā laylatu l-qadr", en:"And what can make you know what is the Night of Decree?", ur:"اور تمہیں کیا معلوم شبِ قدر کیا ہے؟" },
+      { ar:"لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ", translit:"Laylatu l-qadri ḫayrun min alfi šahr", en:"The Night of Decree is better than a thousand months.", ur:"شبِ قدر ہزار مہینوں سے بہتر ہے۔" },
+      { ar:"تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِم مِّن كُلِّ أَمْرٍ", translit:"Tanazzalu l-malāikatu wa-r-rūḥu fīhā bi-iḏni rabbihim min kulli amr", en:"The angels and the Spirit descend therein by permission of their Lord for every matter.", ur:"اس میں فرشتے اور روح اپنے رب کے اذن سے ہر کام کے لئے اترتے ہیں۔" },
+      { ar:"سَلَامٌ هِيَ حَتَّىٰ مَطْلَعِ الْفَجْرِ", translit:"Salāmun hiya ḥattā maṭlaʿi l-fajr", en:"Peace it is until the emergence of dawn.", ur:"وہ رات طلوعِ فجر تک سلامتی ہے۔" }
+    ]
+  }
+};
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let screenStack = ['home'];
+let memorized = JSON.parse(localStorage.getItem('hifz')) || [];
+let currentSurah = null;
+let activeTranslations = new Set();
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showScreen(id) {
+  const current = screenStack[screenStack.length - 1];
+  if (current === id) return;
+  document.getElementById(current).classList.remove('active');
+  document.getElementById(current).classList.add('behind');
+  document.getElementById(id).classList.add('active');
+  screenStack.push(id);
+}
+
+function goBack() {
+  if (screenStack.length <= 1) return;
+  const current = screenStack.pop();
+  const prev = screenStack[screenStack.length - 1];
+  document.getElementById(current).classList.remove('active');
+  document.getElementById(prev).classList.remove('behind');
+  document.getElementById(prev).classList.add('active');
+}
+
+// ══════════════════════════════════════
+// SURAH LIST
+// ══════════════════════════════════════
+function renderSurahList(filter = '') {
+  const container = document.getElementById('surah-rows');
+  const f = filter.toLowerCase();
+  container.innerHTML = '';
+  SURAHS.forEach((s, i) => {
+    if (f && !s.name.toLowerCase().includes(f) && !s.en.toLowerCase().includes(f) && !String(s.id).includes(f)) return;
+    const div = document.createElement('div');
+    div.className = 'surah-row';
+    div.innerHTML = `
+      <div class="surah-num-badge">${s.id}</div>
+      <div class="surah-row-info">
+        <span class="surah-row-name">${s.name}</span>
+        <div class="surah-row-meta">
+          <span>${s.en}</span>
+          <span>·</span>
+          <span>${s.verses} verses</span>
+          <span>·</span>
+          <span>${s.type}</span>
+        </div>
+      </div>
+      <span class="surah-row-arabic">${s.ar}</span>
+      ${memorized.includes(i) ? '<div class="memorized-dot"></div>' : ''}
+    `;
+    div.addEventListener('click', () => openSurah(i));
+    container.appendChild(div);
+  });
+}
+
+function filterSurahs(val) { renderSurahList(val); }
+
+// ══════════════════════════════════════
+// SURAH VIEW
+// ══════════════════════════════════════
+async function openSurah(index) {
+  const s = SURAHS[index];
+  currentSurah = index;
+  activeTranslations = new Set();
+
+  document.getElementById('sv-name').textContent = s.name;
+  document.getElementById('sv-arabic').textContent = s.ar;
+  document.getElementById('sv-meta').textContent = `${s.verses} Verses · ${s.type}`;
+
+  // Reset toggle buttons
+  document.querySelectorAll('.trans-btn').forEach(b => b.classList.remove('active'));
+
+  renderAyahs(index);
+  showScreen('surah-view');
+  document.getElementById('surah-view').scrollTop = 0;
+}
+
+async function fetchWithFallback(surahId) {
+  // Try multiple APIs in order
+  const apis = [
+    async () => {
+      const [arRes, enRes, urRes, trRes] = await Promise.all([
+        fetch(`https://api.alquran.cloud/v1/surah/${surahId}`),
+        fetch(`https://api.alquran.cloud/v1/surah/${surahId}/en.sahih`),
+        fetch(`https://api.alquran.cloud/v1/surah/${surahId}/ur.jalandhry`),
+        fetch(`https://api.alquran.cloud/v1/surah/${surahId}/en.transliteration`)
+      ]);
+      const [arJson, enJson, urJson, trJson] = await Promise.all([
+        arRes.json(), enRes.json(), urRes.json(), trRes.json()
+      ]);
+      if (!arJson.data) throw new Error('bad response');
+      return arJson.data.ayahs.map((a, i) => ({
+        ar: a.text,
+        translit: trJson.data.ayahs[i]?.text || '',
+        en: enJson.data.ayahs[i]?.text || '',
+        ur: urJson.data.ayahs[i]?.text || ''
+      }));
+    },
+    async () => {
+      const res = await fetch(`https://quranapi.pages.dev/api/${surahId}.json`);
+      const json = await res.json();
+      if (!json.arabic1) throw new Error('bad response');
+      return json.arabic1.map((ar, i) => ({
+        ar,
+        translit: json.english?.[i] || '',
+        en: json.english?.[i] || '',
+        ur: json.urdu?.[i] || ''
+      }));
+    },
+    async () => {
+      const res = await fetch(`https://raw.githubusercontent.com/AnverDole/quran-api/main/surahs/${surahId}.json`);
+      const json = await res.json();
+      if (!json.verses) throw new Error('bad response');
+      return json.verses.map(v => ({
+        ar: v.arabic,
+        translit: v.transliteration || '',
+        en: v.translation || '',
+        ur: v.urdu || ''
+      }));
+    }
+  ];
+
+  for (const api of apis) {
+    try { return await api(); } catch (e) { continue; }
+  }
+  throw new Error('All APIs failed');
+}
+
+async function renderAyahs(index) {
+  const s = SURAHS[index];
+  const container = document.getElementById('ayah-container');
+  const activeClass = [...activeTranslations].map(t => `show-${t}`).join(' ');
+
+  container.innerHTML = `
+    <div style="text-align:center; padding:60px 20px; color:var(--ink-light); font-style:italic; font-size:18px;">
+      Loading<span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span>
+    </div>`;
+
+  try {
+    const data = SURAH_CACHE[s.id] || await fetchWithFallback(s.id);
+    SURAH_CACHE[s.id] = data;
+
+    let html = s.id !== 9 ? `<div class="bismillah-banner">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>` : '';
+    html += `<div id="ayah-list" class="${activeClass}">`;
+
+    data.forEach((a, i) => {
+      html += `
+        <div class="ayah-block">
+          <div class="ayah-arabic">
+            ${a.ar}
+            <span class="ayah-number-inline">${i + 1}</span>
+          </div>
+          <div class="ayah-transliteration">${a.translit}</div>
+          <div class="ayah-translation-en">${a.en}</div>
+          <div class="ayah-translation-ur">${a.ur}</div>
+        </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+  } catch (err) {
+    container.innerHTML = `
+      <div style="padding:40px 20px; text-align:center; color:var(--ink-light);">
+        <p style="font-size:16px; margin-bottom:12px;">Could not load ayahs.</p>
+        <p style="font-size:13px; margin-bottom:4px;">Make sure you have internet and the file is open in Safari — not inside another app.</p>
+        <button onclick="openSurah(${index})" style="margin-top:20px; padding:10px 24px; border:1px solid var(--gold); background:none; border-radius:99px; color:var(--gold); font-family:'EB Garamond',serif; font-size:15px; cursor:pointer;">Try Again</button>
+      </div>`;
+  }
+}
+
+function toggleTrans(type) {
+  const btn = document.getElementById(`btn-${type}`);
+  const list = document.getElementById('ayah-list');
+
+  if (activeTranslations.has(type)) {
+    activeTranslations.delete(type);
+    btn.classList.remove('active');
+    if (list) list.classList.remove(`show-${type}`);
+  } else {
+    activeTranslations.add(type);
+    btn.classList.add('active');
+    if (list) list.classList.add(`show-${type}`);
+  }
+}
+
+// ══════════════════════════════════════
+// TRACKER
+// ══════════════════════════════════════
+function renderTracker() {
+  const container = document.getElementById('tracker-rows');
+  container.innerHTML = '';
+
+  SURAHS.forEach((s, i) => {
+    const done = memorized.includes(i);
+    const div = document.createElement('div');
+    div.className = `tracker-row ${done ? 'done' : ''}`;
+    div.dataset.index = i;
+    div.innerHTML = `
+      <div class="tracker-row-info">
+        <span class="tracker-row-name">
+          <span class="tracker-row-num">${s.id}</span>${s.name}
+        </span>
+        <span class="tracker-row-en">${s.en}</span>
+      </div>
+      <div class="check-circle">${done ? '✓' : ''}</div>`;
+    div.addEventListener('click', () => toggleMemorized(i));
+    container.appendChild(div);
+  });
+
+  updateTrackerStats();
+}
+
+function toggleMemorized(i) {
+  if (memorized.includes(i)) {
+    memorized = memorized.filter(x => x !== i);
+  } else {
+    memorized.push(i);
+  }
+  localStorage.setItem('hifz', JSON.stringify(memorized));
+
+  // Update just this row
+  const rows = document.querySelectorAll('.tracker-row');
+  rows.forEach(row => {
+    const idx = parseInt(row.dataset.index);
+    if (idx === i) {
+      const done = memorized.includes(i);
+      row.className = `tracker-row ${done ? 'done' : ''}`;
+      row.querySelector('.check-circle').textContent = done ? '✓' : '';
+    }
+  });
+
+  updateTrackerStats();
+  document.getElementById('home-tracker-sub').textContent = `${memorized.length} / 114 memorized`;
+}
+
+function updateTrackerStats() {
+  const count = memorized.length;
+  const pct = Math.round((count / 114) * 100);
+  document.getElementById('tracker-count').textContent = `${count} / 114`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+renderSurahList();
+renderTracker();
+document.getElementById('home-tracker-sub').textContent = `${memorized.length} / 114 memorized`;
+</script>
+
+</body>
+</html>
